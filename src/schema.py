@@ -1,7 +1,7 @@
 import datetime
 from pydantic import BaseModel
 
-
+# users data validation
 class UserGet(BaseModel):
     id: int
     gender: int
@@ -15,7 +15,7 @@ class UserGet(BaseModel):
     class Config:
         orm_mode = True
 
-
+# posts data validation
 class PostGet(BaseModel):
     id: int
     text: str
@@ -24,7 +24,7 @@ class PostGet(BaseModel):
     class Config:
         orm_mode = True
 
-
+# actions data validation
 class FeedGet(BaseModel):
     user_id: int
     user: UserGet

@@ -4,11 +4,11 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from database import SessionLocal
-from table_user import User
-from table_post import Post
-from table_feed import Feed
-from schema import UserGet, PostGet, FeedGet
+from src.database import SessionLocal
+from src.table_user import User
+from src.table_post import Post
+from src.table_feed import Feed
+from src.schema import UserGet, PostGet, FeedGet
 
 app = FastAPI()
 
@@ -78,3 +78,7 @@ def get_feed(limit:int=10, db: Session = Depends(get_db)):
         .all()
     )
     return result
+
+
+if __name__ == '__main__':
+    uvicorn.run(app)

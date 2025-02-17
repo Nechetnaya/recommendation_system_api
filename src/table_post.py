@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base, SessionLocal
+from src.database import Base, SessionLocal
 
-
+# orm for table "post"
 class Post(Base):
     __tablename__ = "post"
 
@@ -9,7 +9,7 @@ class Post(Base):
     text = Column(String)
     topic = Column(String)
 
-
+# check
 if __name__ == "__main__":
     with SessionLocal() as session:
         result = (

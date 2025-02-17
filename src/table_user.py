@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, func
-from database import Base, SessionLocal
+from src.database import Base, SessionLocal
 
-
+# orm for table "user"
 class User(Base):
     __tablename__ = "user"
 
@@ -14,7 +14,7 @@ class User(Base):
     os = Column(String)
     source = Column(String)
 
-
+# check
 if __name__ == "__main__":
     with SessionLocal() as session:
         result = (

@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
-from database import Base
+from src.database import Base
 
-from table_user import User
-from table_post import Post
+from src.table_user import User
+from src.table_post import Post
 
-
+# orm for table "feed_action"
 class Feed(Base):
     __tablename__ = "feed_action"
 
