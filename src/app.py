@@ -19,6 +19,11 @@ def get_db():
         return db
 
 
+@app.get("/")
+def get_main():
+    return 'StartML course Project: Recommendations'
+
+
 @app.get("/user/{id}", response_model=UserGet)
 def get_user(id:int, db: Session = Depends(get_db)):
     """get user by id"""

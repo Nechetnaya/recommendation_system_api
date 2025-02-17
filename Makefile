@@ -1,5 +1,5 @@
 start:
 	python -m uvicorn src.app:app --reload
 
-start app:
+app:
 	python -m src.app
