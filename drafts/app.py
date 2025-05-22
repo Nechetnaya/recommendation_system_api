@@ -4,14 +4,15 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
+from src.data_load import load_features
 from src.database import SessionLocal
 from src.table_user import User
 from src.table_post import Post
 from src.table_feed import Feed
 from src.schema import UserGet, PostGet, FeedGet
+from src.models import load_models, CAT_FEATURES
 
 app = FastAPI()
-
 
 # connection to startml
 def get_db():
@@ -45,7 +46,7 @@ def get_post(id:int, db: Session = Depends(get_db)):
 
 
 @app.get("/user/{id}/feed", response_model=List[FeedGet])
-def get_feed(id:int, limit:int=10, db: Session = Depends(get_db)):
+def get_feed_user(id:int, limit:int=10, db: Session = Depends(get_db)):
     """get all actions of user by id"""
     result = (
         db.query(Feed)
@@ -58,7 +59,7 @@ def get_feed(id:int, limit:int=10, db: Session = Depends(get_db)):
 
 
 @app.get("/post/{id}/feed", response_model=List[FeedGet])
-def get_feed(id:int, limit:int=10, db: Session = Depends(get_db)):
+def get_feed_post(id:int, limit:int=10, db: Session = Depends(get_db)):
     """get all actions related to post by id"""
     result = (
         db.query(Feed)

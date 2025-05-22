@@ -164,4 +164,5 @@ cython_debug/
 .idea/
 .DS_Store
 .python-version
+drafts/
 

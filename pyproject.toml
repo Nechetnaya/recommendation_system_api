@@ -13,17 +13,22 @@ dependencies = [
     "numpy==1.22.4",
     "pydantic==1.9.1",
     "scikit-learn==1.1.1",
-    #"lightgbm==2.0.3",
+    "lightgbm==2.0.3",
     "xgboost==1.6.1",
     "psycopg2-binary==2.9.3",
     "uvicorn==0.16.0",
     "category-encoders==2.5.0",
     "loguru==0.6.0",
     "implicit==0.7.1",
-    #"lightfm==1.16"
+    "lightfm==1.16"
 ]
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
 
