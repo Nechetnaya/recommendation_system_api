@@ -1,5 +1,5 @@
 
-# Recommendation Systems API
+# Recommendation System API
 
 Content recommender system built with FastAPI and CatBoost, using user behavior, post text, and LightFM embeddings.  
 Developed as a pet project to learn top-N recommendation modeling and API integration.
