@@ -1,5 +1,5 @@
 from app.db.database import engine
-from recommender.feature_engineering import make_user_features, make_post_features
+from recommender.features.feature_engineering import make_user_features, make_post_features
 
 def save_features_to_db(df, table_name):
     df.to_sql(table_name, con=engine, schema="public", if_exists="replace", index=False)

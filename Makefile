@@ -20,14 +20,14 @@ build:
 run:
 	docker run -it -p 8000:8000 -p 6432:6432 recommend-app
 
-# make feature for ьщвуд екфшт
+# make feature for training
 make-features:
-	python -m recommender/build_train_dataset.py
+	python -m recommender/features/build_train_dataset.py
 
 # train model with new data fom db
 train-model:
-	python -m recommender.train_model_entry
+	python -m recommender.training.train_model_entry
 
 # make features for users and posts
 save-features:
-	python recommender/save_features_to_db.py
+	python recommender/features/save_features_to_db.py

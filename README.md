@@ -85,8 +85,10 @@ Developed as a pet project to learn top-N recommendation modeling and API integr
 │   └── main.py             # FastAPI entrypoint
 │
 ├── recommender/            # Model training
-│   ├── notebooks/          # Jupyter research notebooks
-│   └──train\_data/         # Sample train/feature data         
+│   ├── train_data/         # Dir for train dataset saving
+│   ├── data_samples/       # Sample train/feature data
+│   ├── training/           # Training models
+│   └── features/           # Building features and datasets for model      
 │
 ├── models/                 # Saved CatBoost models
 ├── pyproject.toml

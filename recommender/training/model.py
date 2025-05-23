@@ -2,7 +2,7 @@ import gc
 import json
 from catboost import CatBoostClassifier, Pool
 
-from recommender.metrics import calculate_auc, calculate_hit_rate_by_user
+from recommender.training.metrics import calculate_auc, calculate_hit_rate_by_user
 
 
 def train_and_save_model(train_df, cat_features):

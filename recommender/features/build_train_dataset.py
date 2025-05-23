@@ -2,7 +2,8 @@ import pandas as pd
 from pathlib import Path
 
 from app.db.database import engine
-from recommender.feature_engineering import make_user_features, make_post_features
+from recommender.features.feature_engineering import make_user_features, make_post_features
+
 
 
 def load_feed_data(popular_post_ids, limit=2_000_000, chunk_size=500_000):
