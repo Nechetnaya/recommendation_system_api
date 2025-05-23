@@ -3,6 +3,10 @@ from datetime import datetime
 import time
 import pytest
 
+"""
+Check 3 valid user_ids and 1 invalid
+Incase invalid id, top-5 posts are returned
+"""
 
 url = "http://127.0.0.1:8000/post/recommendations/"
 
@@ -10,7 +14,7 @@ url = "http://127.0.0.1:8000/post/recommendations/"
 def test_api(user_id):
     time_str = datetime(2021, 12, 10).isoformat()
     params = {
-        "id": user_id,
+        "user_id": user_id,
         "time": time_str,
         "limit": 5
     }

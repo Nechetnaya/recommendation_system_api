@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from app.core import state
 from app.core.model_loader import load_models
-from app.core.features_loader import load_features
+from app.core.features_loader import load_features, select_top_liked_posts_ids
 from app.api import users, posts, recommend
 
 app = FastAPI(title="StartML Recommendation System")
@@ -14,6 +14,7 @@ def startup_event():
     state.model = load_models()
     state.users_data = load_features('users')
     state.posts_data = load_features('posts')
+    state.top_5_posts_list = select_top_liked_posts_ids(5)
     print("Model and features loaded.")
 
 app.include_router(users.router)

@@ -33,3 +33,18 @@ def load_likes_list(user_id: int, time: datetime) -> list:
         df = pd.read_sql(query, conn, params={"user_id": user_id, "time": time})
 
     return df['post_id'].tolist()
+
+
+def select_top_liked_posts_ids(limit: int) -> list:
+    query = """
+    SELECT post_id, COUNT(*) as likes
+    FROM feed_data
+    WHERE target = 1
+    GROUP BY post_id
+    ORDER BY likes DESC
+    LIMIT %(limit)s
+    """
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn, params={"limit": limit})
+    return df['post_id'].tolist()
+
