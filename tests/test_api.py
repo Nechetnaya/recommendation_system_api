@@ -1,13 +1,14 @@
 import requests
 from datetime import datetime
 import time
+import pytest
 
 
 url = "http://127.0.0.1:8000/post/recommendations/"
 
-for user_id in range(110000, 110002):
+@pytest.mark.parametrize("user_id", [100001, 225, 1177, 0])
+def test_api(user_id):
     time_str = datetime(2021, 12, 10).isoformat()
-
     params = {
         "id": user_id,
         "time": time_str,
@@ -18,9 +19,7 @@ for user_id in range(110000, 110002):
     response = requests.get(url, params=params)
     duration = time.time() - start_time
 
-    if response.status_code == 200:
-        recommendations = response.json()
-        print(f"ID: {user_id} | Время ответа: {duration:.3f} сек")
-        print(f"Рекомендации: {recommendations}\n")
-    else:
-        print(f"ID: {user_id} | Ошибка: {response.status_code} | {response.text}\n")
+    assert response.status_code == 200, f"Status code: {response.status_code}"
+    assert isinstance(response.json(), list), "Response is not a list"
+    assert len(response.json()) == 5, f"Expected 5 posts, got {len(response.json())}"
+    assert duration < 3, f"Response too slow: {duration:.2f} seconds"
