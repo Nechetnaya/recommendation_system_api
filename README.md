@@ -166,7 +166,7 @@ GET /post/recommendations/?id=1234\&time=2021-12-01T12:00:00\&limit=5
 ]
 ````
 
-If the user is not found, an empty list `[]` is returned.
+If the user is not found, the top-5 liked posts are returned.
 
 ---
 
@@ -175,7 +175,7 @@ If the user is not found, an empty list `[]` is returned.
 ### 1. Install dependencies
 
 ```bash
-uv install
+uv sync
 ```
 
 ### 2. Run API
@@ -188,14 +188,6 @@ The API will be available at:
 [http://127.0.0.1:8000/post/recommendations](http://127.0.0.1:8000/post/recommendations)
 
 ---
-
-##  TODO
-
-* [ ] Add unit tests
-* [ ] Add Dockerfile and docker-compose
-
----
-
 ## Author
 
 Irina Nechetnaya

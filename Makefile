@@ -7,8 +7,11 @@ app:
 	python -m app.main
 
 test:
-	python tests/test_api.py
+	python -m pytest tests
 
-test_noid:
-	python tests/test_api_noid.py
+build:
+	docker build --platform=linux/amd64 -t recommend-app .
+
+run:
+	docker run -it -p 8000:8000 -p 6432:6432 recommend-app
 
