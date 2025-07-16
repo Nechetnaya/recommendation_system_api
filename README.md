@@ -1,8 +1,9 @@
-
 # Recommendation System API
 
-Content recommender system built with FastAPI and CatBoost, using user behavior, post text, and LightFM embeddings.  
-Developed as a pet project to learn top-N recommendation modeling and API integration.
+Content recommender system built with FastAPI and CatBoost, using user behavior, post text, and LightGCN embeddings.  
+Developed as a pet project to learn top-N recommendation modeling, A/B testing, and API integration.
+
+This project includes two recommendation models with different feature sets and a full A/B test pipeline to compare their performance on held-out data.
 
 ---
 
@@ -46,16 +47,53 @@ Developed as a pet project to learn top-N recommendation modeling and API integr
 
 ### Completed:
 - Preprocessing and feature engineering done in notebooks  
-- User and post embeddings generated with LightFM  
+- User and post embeddings generated with LightGCN  
 - Text features extracted from posts (TFIDF + TruncatedSVD)  
-- CatBoostClassifier trained and optimized for AUC  
+- Two CatBoost models trained: baseline and extended with extra features  
 - Integrated into FastAPI app with PostgreSQL connection  
-- Supports recommendation queries filtering out already liked posts
+- A/B test implemented to compare models on held-out data  
+- Recommendation API filters out already liked posts
+
+### A/B Test Methodology
+An A/B test was conducted on held-out user interactions from December 2021 to compare the two recommendation models:
+
+- **Control group** received recommendations from the baseline model (fewer features)  
+- **Test group** received recommendations from the enhanced model (with topic-level like rates, lexical features, and LightGCN embeddings)
+
+**Evaluation metrics:**
+- `HitRate@5`: checks whether at least one liked post is present in the top-5 recommended
+
+Each user was deterministically assigned to an experiment group using a hash function on their user ID to simulate real-life A/B testing.
+
+Full analysis in notebook:  
+📄 `ab_test/ab_test_analysis.ipynb`
 
 ### Results:
-- HitRate@5 on test: **0.582**  
-- AUC: **0.76**  
-- API response time: < 500 ms for 5 recommendations
+| Metric         | Control Model | Test Model |
+|----------------|---------------|------------|
+| AUC            | 0.773         | **0.82**   |
+| HitRate@5      | 0.611         | **0.706**  |
+
+---
+
+## Feature Description
+
+### User features:
+- `weekday`, `hour` – weekday and hour of the request  
+- `gender`, `age` – from profile  
+- `avg_log_word_len`, `max_log_word_len` – lexical stats of previously liked posts  
+- Topic-specific like rates: `movie_likes_rate`, `business_likes_rate`, `covid_likes_rate`, `sport_likes_rate`, `politics_likes_rate`, `tech_likes_rate`  
+- `views_per_day`, `likes_per_day` – user activity stats  
+- One-hot encoded country: e.g., `country_Belarus`, ..., `country_Ukraine`  
+- Experiment groups: `exp_group_1`, ..., `exp_group_4`  
+- `city_freq` – frequency of city occurrence
+
+### Post features:
+- `log_text_len`, `n_words`, `avg_word_len` – lexical features  
+- `like_count_log`, `like_rank`, `like_score` – popularity features  
+- `tfidf_0` to `tfidf_99` – TFIDF vectors reduced by Truncated SVD  
+- `topic_*` – one-hot encoded topics  
+- `item_emb_0` to `item_emb_63` – LightGCN embeddings
 
 ---
 
@@ -66,61 +104,9 @@ Developed as a pet project to learn top-N recommendation modeling and API integr
 - CatBoost  
 - SQLAlchemy + PostgreSQL  
 - Pandas / Scikit-learn  
-- LightFM  
+- LightGCN  
 - Jupyter / Redash  
-- Pydantic, UV
-
----
-
-## Project structure
-
-```
-
-.
-├── app/                    # FastAPI application
-│   ├── api/                # Routes and request handlers
-│   ├── core/               # Model and data loading
-│   ├── db/                 # SQLAlchemy models and sessions
-│   ├── schema.py           # Pydantic schemas
-│   └── main.py             # FastAPI entrypoint
-│
-├── recommender/            # Model training
-│   ├── train_data/         # Dir for train dataset saving
-│   ├── data_samples/       # Sample train/feature data
-│   ├── training/           # Training models
-│   └── features/           # Building features and datasets for model      
-│
-├── models/                 # Saved CatBoost models
-├── pyproject.toml
-├── Makefile
-└── README.md
-
-```
-
----
-
-## Data Examples (`recommender/train_data/`)
-
-Contains examples:
-
-- `train_sample.csv` — ~2K rows training subset
-
-- `user_features.csv` — user_id + features:
-  - `age_group` — categorical  
-  - `country` — categorical  
-  - `exp_group` — encrypted experimental group  
-  - `views_day` — average number of views per day  
-  - `movie_views_rate` — share of views for the "movie" topic from all views  
-  - `movie_likes_rate`, `covid_likes_rate`, `sport_likes_rate`, `politics_likes_rate`, `business_likes_rate`, `tech_likes_rate` — conversion rates from views to likes by post topic  
-  - `user_emb_0` … `user_emb_9` — LightFM user embeddings
-
-- `post_features.csv` — post_id + features:
-  - `topic` — post topic  
-  - `likes_rating` — rank by total likes  
-  - `tfidf_0` … `tfidf_9` — post text embeddings (TFIDF + SVD)  
-  - `post_emb_0` … `post_emb_9` — LightFM post embeddings
-
-- `likes.csv` — `timestamp`, `user_id`, `post_id` (used to exclude already liked posts)
+- Pydantic, Uvicorn
 
 ---
 
@@ -128,45 +114,44 @@ Contains examples:
 
 ### Method:
 ```
-
 GET /post/recommendations/
-
 ```
 
 ### Parameters:
 | Parameter | Type   | Description                                   |
 |-----------|--------|-----------------------------------------------|
-| `id`      | `int`  | User ID                                      |
+| `user_id` | `int`  | User ID                                      |
 | `time`    | `str`  | Timestamp in ISO format                       |
 | `limit`   | `int`  | Number of recommendations to return (default 5) |
 
 Example:
 ```
-
-GET /post/recommendations/?id=1234\&time=2021-12-01T12:00:00\&limit=5
-
-````
+GET /post/recommendations/?id=1234&time=2021-12-01T12:00:00&limit=5
+```
 
 ### Example response:
 ```json
-[
-  {
-    "id": 4087,
-    "text": "How to deploy FastAPI with Uvicorn and Docker",
-    "topic": "backend"
-  },
-  {
-    "id": 1032,
-    "text": "10 secrets of data preprocessing in ML",
-    "topic": "machine_learning"
-  },
-  {
-    "id": 2354,
-    "text": "What is feature importance and how to use it",
-    "topic": "data_science"
-  }
-]
-````
+{
+  "exp_group": "test",
+  "recommendations": [
+    {
+      "id": 4087,
+      "text": "How to deploy FastAPI with Uvicorn and Docker",
+      "topic": "backend"
+    },
+    {
+      "id": 1032,
+      "text": "10 secrets of data preprocessing in ML",
+      "topic": "machine_learning"
+    },
+    {
+      "id": 2354,
+      "text": "What is feature importance and how to use it",
+      "topic": "data_science"
+    }
+  ]
+}
+```
 
 If the user is not found, the top-5 liked posts are returned.
 
@@ -175,13 +160,11 @@ If the user is not found, the top-5 liked posts are returned.
 ## Installation and running
 
 ### 1. Install dependencies
-
 ```bash
 uv sync
 ```
 
 ### 2. Run API
-
 ```bash
 uvicorn app.main:app --reload
 ```
@@ -190,9 +173,10 @@ The API will be available at:
 [http://127.0.0.1:8000/post/recommendations](http://127.0.0.1:8000/post/recommendations)
 
 ---
+
 ## Author
 
 Irina Nechetnaya
 
-Project developed as part of ML and backend development learning and practice.
+Project developed as part of ML and backend development learning and practice.  
 Developed in the [StartML](https://karpov.courses/ml-start) program at karpov.courses
