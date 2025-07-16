@@ -14,8 +14,8 @@ def batch_load_sql(query: str) -> pd.DataFrame:
 
 def load_features(name: str) -> pd.DataFrame:
     queries = {
-        'users': "SELECT * FROM irina_nechetnaya_user_df_for_cb_fm_full_model_20_05",
-        'posts': "SELECT * FROM irina_nechetnaya_post_df_for_cb_fm_full_model_20_05",
+        'users': "SELECT * FROM nechetnaya_user_features_full_1507",
+        'posts': "SELECT * FROM nechetnaya_post_features_full_1507",
     }
     if name not in queries:
         raise ValueError(f"Unknown dataset name: {name}")
@@ -25,7 +25,7 @@ def load_features(name: str) -> pd.DataFrame:
 def load_likes_list(user_id: int, time: datetime) -> list:
     query = """
     SELECT post_id
-    FROM irina_nechetnaya_likes
+    FROM nechetnaya_likes
     WHERE user_id = %(user_id)s
       AND timestamp < %(time)s
     """

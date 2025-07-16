@@ -1,34 +1,40 @@
+import numpy as np
 import pandas as pd
 from datetime import datetime
-from catboost import Pool
+from catboost import CatBoostClassifier
 
 import app.core.state as state
 from app.core.features_loader import load_likes_list
-
 
 def get_user_df(user_id: int, time: datetime) -> pd.DataFrame:
     user_row = state.users_data[state.users_data['user_id'] == user_id]
     if user_row.empty:
         return pd.DataFrame()
 
-    user_data = user_row.drop(columns='user_id').iloc[0]
+    user_data = user_row.drop('user_id', axis=1).iloc[0].to_dict()
+    user_data['hour'] = np.float32(time.hour)
+    user_data['weekday'] = np.float32(time.weekday())
+
     posts_list = load_likes_list(user_id, time)
-
     if not posts_list:
-        return state.posts_data.set_index('post_id').assign(**user_data.to_dict())
+        post_subset = state.posts_data
+    else:
+        posts_to_exclude = set(posts_list)
+        post_subset = state.posts_data.loc[~state.posts_data['post_id'].isin(posts_to_exclude)]
 
-    posts_to_exclude = set(posts_list)
-    posts_subset = state.posts_data.loc[~state.posts_data['post_id'].isin(posts_to_exclude)]
+    post_indexed = post_subset.set_index('post_id')
+    user_features_df = pd.DataFrame([user_data] * len(post_indexed), index=post_indexed.index)
+    df = pd.concat([post_indexed, user_features_df], axis=1)
 
-    return posts_subset.set_index('post_id').assign(**user_data.to_dict())
+    return df
 
 
-def get_recommend_ids(user_id: int, time: datetime, limit: int = 5) -> list:
+def get_recommend_ids(user_id: int, time: datetime, model: CatBoostClassifier, limit: int = 5) -> list:
     df = get_user_df(user_id, time)
     if df.empty:
         return []
 
-    pool = Pool(df, cat_features=state.CAT_FEATURES)
-    df['pred'] = state.model.predict_proba(pool)[:, 1]
+    features = model.feature_names_
+    df['pred'] = model.predict_proba(df[features])[:, 1]
 
     return df.nlargest(limit, 'pred').index.tolist()

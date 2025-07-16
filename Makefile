@@ -4,6 +4,10 @@
 start:
 	python -m uvicorn app.main:app --reload
 
+# run check for course
+check:
+	python -m uvicorn app.app_for_course_checker_ab:app --reload
+
 # run app
 app:
 	python -m app.main
@@ -31,3 +35,6 @@ train-model:
 # make features for users and posts
 save-features:
 	python recommender/features/save_features_to_db.py
+
+ab:
+	python -m ab_test/ab_test_script.py

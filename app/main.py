@@ -11,7 +11,7 @@ app = FastAPI(title="StartML Recommendation System")
 @app.on_event("startup")
 def startup_event():
     print("Loading model and features on startup...")
-    state.model = load_models()
+    state.model_test, state.model_control = load_models()
     state.users_data = load_features('users')
     state.posts_data = load_features('posts')
     state.top_5_posts_list = select_top_liked_posts_ids(5)

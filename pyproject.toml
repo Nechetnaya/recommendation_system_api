@@ -20,6 +20,7 @@ dependencies = [
     "loguru==0.6.0",
     "implicit==0.7.1",
     "python-dotenv>=1.0.1",
+    "psutil>=7.0.0",
 ]
 
 [tool.poetry.dependencies]
