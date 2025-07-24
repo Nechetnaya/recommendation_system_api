@@ -4,6 +4,7 @@ from scipy.stats import ttest_ind, mannwhitneyu
 from statsmodels.stats.proportion import proportions_ztest
 import matplotlib.pyplot as plt
 import seaborn as sns
+import hashlib
 
 recommendations = pd.read_csv("ab_test/views.csv")
 likes = pd.read_csv("ab_test/likes.csv")
@@ -62,18 +63,27 @@ exp_likes = views_likes.groupby(['user_id', 'exp_group', 'show_number'], as_inde
 
 # Bucket-тест
 N_BUCKETS = 100
-exp_likes['bucket'] = exp_likes.groupby('exp_group', group_keys=False).apply(
-    lambda x: pd.qcut(x['show_number'], q=N_BUCKETS, labels=False)
-).reset_index(drop=True)
+
+def user_to_bucket(user_id, n_buckets=N_BUCKETS, salt="my_salt"):
+    s = f"{user_id}_{salt}"
+    h = hashlib.md5(s.encode('utf-8')).digest()
+    h_int = int.from_bytes(h[:4], byteorder='big')
+    return h_int % n_buckets
+
+exp_likes['bucket'] = exp_likes['user_id'].apply(lambda uid: user_to_bucket(uid))
 
 bucket_stats = exp_likes.groupby(['exp_group', 'bucket'], as_index=False).agg(
-    hitrate=('has_like', 'mean'), impressions=('has_like', 'count')
+    likes=('has_like', 'sum'),
+    impressions=('has_like', 'count')
 )
+bucket_stats['hitrate'] = bucket_stats['likes'] / bucket_stats['impressions']
 
-control_buckets = bucket_stats[bucket_stats.exp_group == 'control']['hitrate']
+hitrate_test_avg = bucket_stats[bucket_stats.exp_group == 'test']['hitrate'].mean()
+hitrate_control_avg = bucket_stats[bucket_stats.exp_group == 'control']['hitrate'].mean()
 test_buckets = bucket_stats[bucket_stats.exp_group == 'test']['hitrate']
-
+control_buckets = bucket_stats[bucket_stats.exp_group == 'control']['hitrate']
 t_stat, p_hitrate = ttest_ind(test_buckets, control_buckets, equal_var=False)
+
 
 # Вывод результатов
 print("SRM p-value:", round(p_srm, 5))
