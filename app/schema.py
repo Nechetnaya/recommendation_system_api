@@ -1,3 +1,13 @@
+"""
+Pydantic models for request/response validation and ORM serialization.
+
+Models:
+- UserGet: Schema for returning user data.
+- PostGet: Schema for returning post data.
+- Response: Schema for recommendation response with experiment group info.
+- FeedGet: Schema for user-post interaction data (feed actions).
+"""
+
 import datetime
 from typing import List
 

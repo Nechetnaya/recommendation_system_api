@@ -1,3 +1,23 @@
+"""
+This module provides the core recommendation logic for generating personalized post
+recommendations based on user features and a trained CatBoost model.
+
+Functions:
+
+- get_user_df(user_id: int, time: datetime) -> pd.DataFrame:
+    Constructs a feature-enriched DataFrame of posts for a given user.
+    Filters out posts the user has already interacted with (liked).
+    Adds user-related time features (hour and weekday).
+    Returns:
+        pd.DataFrame: Feature matrix combining user and post features.
+
+- get_recommend_ids(user_id: int, time: datetime, model: CatBoostClassifier, limit: int = 5) -> list:
+    Generates a ranked list of post IDs recommended for the given user.
+    Scores posts using the provided CatBoost model based on user-post features.
+    Returns:
+        list: Top-N recommended post IDs, ranked by predicted relevance.
+"""
+
 import numpy as np
 import pandas as pd
 from datetime import datetime

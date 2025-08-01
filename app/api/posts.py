@@ -1,3 +1,18 @@
+"""
+API endpoints for retrieving posts and related feed actions.
+
+This module defines routes under the "/post" prefix for accessing individual posts,
+their associated feed actions, and a list of top liked posts.
+
+Endpoints:
+- GET /post/{id}: Retrieve a post by its ID.
+- GET /post/{id}/feed: Retrieve feed actions related to a specific post.
+- GET /post/top-liked: Retrieve the top liked posts.
+
+Dependencies:
+- SQLAlchemy Session from `get_db`
+"""
+
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,7 +29,7 @@ router = APIRouter(prefix="/post", tags=["posts"])
 
 @router.get("/{id}", response_model=PostGet)
 def get_post(id:int, db: Session = Depends(get_db)):
-    """get post by id"""
+    """ Retrieve a post by its ID."""
     result = db.query(Post).filter(Post.id == id).first()
     if not result:
         raise HTTPException(404, "post is not found")
@@ -24,7 +39,7 @@ def get_post(id:int, db: Session = Depends(get_db)):
 
 @router.get("/{id}/feed", response_model=List[FeedGet])
 def get_feed_post(id:int, limit:int=10, db: Session = Depends(get_db)):
-    """get all actions related to post by id"""
+    """Retrieve feed actions related to a specific post."""
     result = (
         db.query(Feed)
         .filter(Feed.post_id == id)
@@ -37,7 +52,7 @@ def get_feed_post(id:int, limit:int=10, db: Session = Depends(get_db)):
 
 @router.get("/top-liked", response_model=List[PostGet])
 def get_top_liked_posts(limit: int = 10, db: Session = Depends(get_db)):
-    """get top liked posts"""
+    """Retrieve the top liked posts."""
     top_posts = select_top_liked_posts_ids(limit)
     posts = db.query(Post).filter(Post.id.in_(top_posts)).all()
 

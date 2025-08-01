@@ -1,3 +1,16 @@
+"""
+Feature extraction and persistence module.
+
+This script generates user and post features using the corresponding
+feature engineering functions and saves them to a PostgreSQL database.
+
+Functions:
+- save_features_to_db(df, table_name): saves a DataFrame to a SQL table.
+- main(): generates features and writes them to 'user_features' and 'post_features' tables.
+
+Run this script directly to update feature tables in the database.
+"""
+
 from app.db.database import engine
 from recommender.features.feature_engineering import make_user_features, make_post_features
 

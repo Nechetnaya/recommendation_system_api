@@ -1,3 +1,28 @@
+"""
+This module provides utility functions to load data from a PostgreSQL database
+using SQL queries, including user and post features, user likes, and top-liked posts.
+
+Functions:
+
+- batch_load_sql(query: str) -> pd.DataFrame:
+    Loads a large SQL query result in chunks and concatenates them into a single DataFrame.
+    Useful for memory-efficient loading of large tables.
+
+- load_features(name: str) -> pd.DataFrame:
+    Loads predefined feature tables for users or posts based on the `name` argument.
+    Raises ValueError if an unknown name is provided.
+
+- load_likes_list(user_id: int, time: datetime) -> list:
+    Returns a list of post IDs that the user has liked before a given timestamp.
+
+- select_top_liked_posts_ids(limit: int) -> list:
+    Returns a list of post IDs with the highest number of likes, limited by `limit`.
+
+Requirements:
+- Expects tables: `nechetnaya_user_features_full_1507`,
+  `nechetnaya_post_features_full_1507`, `nechetnaya_likes`, `feed_data`.
+"""
+
 from datetime import datetime
 import pandas as pd
 from app.db.database import engine

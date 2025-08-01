@@ -1,7 +1,24 @@
+"""
+ORM model for the 'user' table representing user profiles.
+
+Attributes:
+- id (int, PK): Unique user identifier.
+- gender (int): User gender code.
+- age (int): User age.
+- country (str): User country.
+- city (str): User city.
+- exp_group (int): Experiment group assignment.
+- os (str): User device operating system.
+- source (str): User acquisition source.
+
+Includes a test query that counts users by country and OS in experiment group 3,
+filtering groups with more than 100 users, ordered by count descending.
+"""
+
 from sqlalchemy import Column, Integer, String, func
 from app.db.database import Base, SessionLocal
 
-# orm for table "user"
+
 class User(Base):
     __tablename__ = "user"
 
@@ -14,7 +31,7 @@ class User(Base):
     os = Column(String)
     source = Column(String)
 
-# check
+# Test query: count users grouped by country and OS in experiment group 3
 if __name__ == "__main__":
     with SessionLocal() as session:
         result = (

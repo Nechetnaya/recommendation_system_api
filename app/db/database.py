@@ -1,11 +1,18 @@
-import os # work with env var
-from dotenv import load_dotenv # load env var
+"""
+Database setup and connection management using SQLAlchemy.
+
+- Loads PostgreSQL connection parameters from environment variables.
+- Creates SQLAlchemy engine and session factory.
+- Provides `get_db` generator to yield and close DB session for dependency injection.
+"""
+
+import os # Work with environment variables
+from dotenv import load_dotenv # Load env variables from .env file
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-# connection with environment variables
 load_dotenv()
 
 user = os.environ.get('POSTGRES_USER')
@@ -16,10 +23,11 @@ database = os.environ.get('POSTGRES_DATABASE')
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
-# engine with SQLAlchemy
+# Create SQLAlchemy engine and session factory
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Base class for declarative models
 Base = declarative_base()
 
 def get_db():

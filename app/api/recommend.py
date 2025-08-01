@@ -1,3 +1,24 @@
+"""
+This module defines the recommendation endpoint for users.
+
+Endpoint:
+- GET /post/recommendations/: Returns a list of recommended posts for a user based on their experiment group.
+
+Functionality:
+- Determines the user's experimental group (test or control).
+- Selects the appropriate recommendation model.
+- Logs the recommendation process for transparency and debugging.
+- Falls back to a default list of top 5 posts if no personalized recommendations are found.
+- Returns post objects in the order of recommended post IDs.
+
+Dependencies:
+- FastAPI for routing and dependency injection.
+- SQLAlchemy ORM for database interaction.
+- `state` module for model instances and default post list.
+- `get_recommend_ids` for fetching recommendations.
+- `get_exp_group` for experimental group assignment.
+"""
+
 import logging
 from datetime import datetime
 

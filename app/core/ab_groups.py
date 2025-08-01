@@ -1,3 +1,20 @@
+"""
+This module defines the logic for assigning users to experimental groups.
+
+Function:
+- get_exp_group: Deterministically assigns a user to either 'control' or 'test' group
+  based on a hash of their user ID and a salt value.
+
+Details:
+- Uses MD5 hashing for consistent bucketing.
+- Ensures ~50/50 distribution between control and test groups.
+- The salt can be changed to manage different experiments.
+
+Example:
+>>> get_exp_group(123)
+'test'
+"""
+
 import hashlib
 
 

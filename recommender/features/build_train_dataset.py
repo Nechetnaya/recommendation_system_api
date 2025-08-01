@@ -1,3 +1,20 @@
+"""
+Module for generating and saving training dataset for the recommendation model.
+
+Functions:
+- load_feed_data(popular_post_ids, limit=..., chunk_size=...):
+    Loads filtered and deduplicated feed data for selected post IDs from the database.
+
+- make_train_dataset():
+    Combines user, post, and interaction features into a single training dataset.
+
+- save_train_dataset(path):
+    Saves the generated training dataset to a parquet file.
+
+- load_train_dataset(path):
+    Loads the training dataset from a parquet file.
+"""
+
 import pandas as pd
 from pathlib import Path
 

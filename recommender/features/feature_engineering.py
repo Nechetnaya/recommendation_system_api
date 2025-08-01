@@ -1,3 +1,48 @@
+"""
+Feature engineering module for training the recommendation model.
+
+Functions:
+
+User Features:
+- get_user_data():
+    Loads raw user metadata from the database.
+
+- get_user_activity_features():
+    Calculates user activity as mean views per active day.
+
+- get_user_topic_preferences():
+    Computes user like/view rates for each topic.
+
+- get_user_embeddings():
+    Returns user embeddings from LightFM model.
+
+- make_user_features():
+    Combines user features into a single DataFrame.
+
+Post Features:
+- get_post_data():
+    Loads raw post text and topic data.
+
+- get_popular_post_ids(min_likes):
+    Returns list of post_ids with at least `min_likes` views.
+
+- get_text_features(posts_df):
+    Extracts text features using TF-IDF + SVD.
+
+- get_post_rating():
+    Computes like-based rating for posts.
+
+- get_post_embeddings():
+    Returns post embeddings from LightFM model.
+
+- make_post_features():
+    Combines post features into a single DataFrame.
+
+LightFM:
+- get_lightfm_embeddings():
+    Trains LightFM model and extracts user/post embeddings.
+"""
+
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
